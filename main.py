@@ -15,8 +15,9 @@ class Calculator():
         self.gui.configure(bg='grey27')
 
         self.curr_eval = StringVar()
-        # self.curr_eval.set('hello')
         self.curr_equation = StringVar()
+        self.curr_value = IntVar()
+        self.curr_value.set(0)
 
         ## Buttons
         #Main entry
@@ -82,9 +83,6 @@ class Calculator():
         button_dot.grid(row=6, column=2)
         button_equal.grid(row=6, column=3)
 
-
-
-
     def start(self):
         """
         Main loop
@@ -103,14 +101,38 @@ class Calculator():
     def clickOperation(self, operation):
         if operation == '=':
             pass
-        elif self.curr_equation.get() != '' and self.curr_equation.get()[len(self.curr_equation.get())-1] in evaluators:
-            pass
         else:
             new_equation = self.curr_equation.get()
             new_equation += self.curr_eval.get()
-            new_equation += operation
+            new_equation += ' ' + operation + ' '
+            if self.curr_equation.get() != '' and self.curr_equation.get()[len(self.curr_equation.get()) - 2] in evaluators:
+                self.evaluateExpression(new_equation)
+            else:
+                self.curr_eval.set('')
             self.curr_equation.set(new_equation)
-            self.curr_eval.set('')
+
+    def evaluateExpression(self, equation):
+        """
+        evaluates expression currently set in curr_equation
+        """
+
+        #TODO - Check that the last command entered was a number so you don't just keep adding the latest values together.  Shouldn't be able to mash the + button
+        ops = equation.split(' ')[-4:-2]
+        if ops[0] == '+':
+            new_val = int(self.curr_eval.get()) + int(ops[1])
+            self.curr_eval.set(str(new_val))
+        elif ops[0] == '-':
+            new_val = int(self.curr_eval.get()) - int(ops[1])
+            self.curr_eval.set(str(new_val))
+        elif ops[0] == 'x':
+            new_val = int(self.curr_eval.get()) * int(ops[1])
+            self.curr_eval.set(str(new_val))
+        elif ops[0] == chr(247):
+            new_val = round(self.curr_eval.get() / int(ops[1]), 4)
+            self.curr_eval.set(str(new_val))
+
+
+
 
 class HoverButton(tk.Button):
     def __init__(self, master, **kw):
@@ -129,3 +151,5 @@ class HoverButton(tk.Button):
 
 CALC = Calculator()
 CALC.start()
+
+
