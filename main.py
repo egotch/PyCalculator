@@ -1,11 +1,18 @@
 from tkinter import *
+import tkinter as tk
 large_font = ('Verdana', 20)
 small_font = ('Verdana', 10)
+
+evaluators = [
+    '+', '-', '\\', 'x'
+]
 
 class Calculator():
     def __init__(self):
         self.gui = Tk()
         self.gui.title("Py Calculator")
+        self.gui.attributes('-alpha', 0.9)
+        self.gui.configure(bg='grey27')
 
         self.curr_eval = StringVar()
         # self.curr_eval.set('hello')
@@ -13,37 +20,41 @@ class Calculator():
 
         ## Buttons
         #Main entry
-        equation = Entry(self.gui, textvariable=self.curr_equation, width=16, font=small_font)
+        equation = Entry(self.gui, textvariable=self.curr_equation, width=16, font=small_font, relief='flat', background=self.gui['background'], foreground='white')
         equation.grid(row=0, column=0, columnspan=3)
 
-        evaluation = Entry(self.gui, textvariable=self.curr_eval, width=16, borderwidth=5, font=large_font)
+        evaluation = Entry(self.gui, textvariable=self.curr_eval, width=16, borderwidth=5, font=large_font, relief='flat', background=self.gui['background'], foreground='white')
         evaluation.grid(row=1, column=0, columnspan=3)
 
 
         #Number Buttons
-        button_1 = Button(self.gui, text='1', padx=40, pady=20, font=small_font, command=lambda: self.clickNumber(1))
-        button_2 = Button(self.gui, text='2', padx=40, pady=20, font=small_font, command=lambda: self.clickNumber(2))
-        button_3 = Button(self.gui, text='3', padx=40, pady=20, font=small_font, command=lambda: self.clickNumber(3))
-        button_4 = Button(self.gui, text='4', padx=40, pady=20, font=small_font, command=lambda: self.clickNumber(4))
-        button_5 = Button(self.gui, text='5', padx=40, pady=20, font=small_font, command=lambda: self.clickNumber(5))
-        button_6 = Button(self.gui, text='6', padx=40, pady=20, font=small_font, command=lambda: self.clickNumber(6))
-        button_7 = Button(self.gui, text='7', padx=40, pady=20, font=small_font, command=lambda: self.clickNumber(7))
-        button_8 = Button(self.gui, text='8', padx=40, pady=20, font=small_font, command=lambda: self.clickNumber(8))
-        button_9 = Button(self.gui, text='9', padx=40, pady=20, font=small_font, relief='flat', command=lambda: self.clickNumber(9))
-        button_0 = Button(self.gui, text='0', padx=40, pady=20, font=small_font, borderwidth=0, command=lambda: self.clickNumber(0))
+        button_args = {'font':small_font, 'relief':'flat', 'background':'black', 'foreground':'white', 'activebackground':'grey40'}
+        number_padding={'padx':45, 'pady':19}
+        button_1 = HoverButton(self.gui, text='1', **number_padding, **button_args, command=lambda: self.clickNumber(1))
+        button_2 = HoverButton(self.gui, text='2', **number_padding, **button_args, command=lambda: self.clickNumber(2))
+        button_3 = HoverButton(self.gui, text='3', **number_padding, **button_args, command=lambda: self.clickNumber(3))
+        button_4 = HoverButton(self.gui, text='4', **number_padding, **button_args, command=lambda: self.clickNumber(4))
+        button_5 = HoverButton(self.gui, text='5', **number_padding, **button_args, command=lambda: self.clickNumber(5))
+        button_6 = HoverButton(self.gui, text='6', **number_padding, **button_args, command=lambda: self.clickNumber(6))
+        button_7 = HoverButton(self.gui, text='7', **number_padding, **button_args, command=lambda: self.clickNumber(7))
+        button_8 = HoverButton(self.gui, text='8', **number_padding, **button_args, command=lambda: self.clickNumber(8))
+        button_9 = HoverButton(self.gui, text='9', **number_padding, **button_args, command=lambda: self.clickNumber(9))
+        button_0 = HoverButton(self.gui, text='0', **number_padding, **button_args, command=lambda: self.clickNumber(0))
 
-        button_dot = Button(self.gui, text='.', padx=40, pady=20, font=small_font, background='lightgrey', command=lambda: self.clickNumber('.'))
-        button_posneg = Button(self.gui, text=chr(177), padx=37, pady=20, font=small_font)
+        button_dot = HoverButton(self.gui, text='.', padx=45.55, pady=20, **button_args, command=lambda: self.clickNumber('.'))
+        button_posneg = HoverButton(self.gui, text=chr(177), padx=44, pady=20, **button_args)
 
         #Operation Buttons
-        button_equal    = Button(self.gui, text='=', padx=40, pady=20, font=small_font)
-        button_add      = Button(self.gui, text='+', padx=40, pady=20, font=small_font, command=lambda: self.clickOperation('+'))
-        button_minus    = Button(self.gui, text='-', padx=40, pady=20, font=small_font, command=lambda: self.clickOperation('-'))
-        button_multiply = Button(self.gui, text='x', padx=40, pady=20, font=small_font, command=lambda: self.clickOperation('x'))
-        button_divide   = Button(self.gui, text=chr(247), padx=40, pady=20, font=small_font, command=lambda: self.clickOperation(chr(247)))
-        button_inverse  = Button(self.gui, text='1/x', padx=40, pady=20, font=small_font)
-        button_square   = Button(self.gui, text='x'+chr(178), padx=40, pady=20, font=small_font)
-        button_sqrt     = Button(self.gui, text='Sqrt', padx=36, pady=20, font=small_font)
+        operation_args = {'font':small_font, 'relief':'flat', 'background':'grey13', 'foreground':'white', 'activebackground':'grey40'}
+        equals_args = {'font':small_font, 'relief':'flat', 'background':'blue4', 'foreground':'white', 'activebackground':'blue2'}
+        button_equal    = HoverButton(self.gui, text='=', padx=40, pady=20, **equals_args)
+        button_add      = HoverButton(self.gui, text='+', padx=40, pady=20, **operation_args, command=lambda: self.clickOperation('+'))
+        button_minus    = HoverButton(self.gui, text='-', padx=40, pady=20, **operation_args, command=lambda: self.clickOperation('-'))
+        button_multiply = HoverButton(self.gui, text='x', padx=40, pady=20, **operation_args, command=lambda: self.clickOperation('x'))
+        button_divide   = HoverButton(self.gui, text=chr(247), padx=38, pady=20, **operation_args, command=lambda: self.clickOperation(chr(247)))
+        button_inverse  = HoverButton(self.gui, text='1/x', padx=40, pady=20, **operation_args)
+        button_square   = HoverButton(self.gui, text='x'+chr(178), padx=40, pady=20, **operation_args)
+        button_sqrt     = HoverButton(self.gui, text='Sqrt', padx=36, pady=20, **operation_args)
 
         #Place buttons
         button_inverse.grid(row=2, column=0)
@@ -90,12 +101,29 @@ class Calculator():
         self.curr_eval.set(self.curr_eval.get() + str(number))
 
     def clickOperation(self, operation):
-        new_equation = self.curr_equation.get()
-        new_equation += self.curr_eval.get()
-        new_equation += operation
-        self.curr_equation.set(new_equation)
-        self.curr_eval.set('')
+        if operation == '=':
+            pass
+        elif self.curr_equation.get() != '' and self.curr_equation.get()[len(self.curr_equation.get())-1] in evaluators:
+            pass
+        else:
+            new_equation = self.curr_equation.get()
+            new_equation += self.curr_eval.get()
+            new_equation += operation
+            self.curr_equation.set(new_equation)
+            self.curr_eval.set('')
 
+class HoverButton(tk.Button):
+    def __init__(self, master, **kw):
+        tk.Button.__init__(self,master=master,**kw)
+        self.defaultBackground = self["background"]
+        self.bind("<Enter>", self.on_enter)
+        self.bind("<Leave>", self.on_leave)
+
+    def on_enter(self, e):
+        self['background'] = self['activebackground']
+
+    def on_leave(self, e):
+        self['background'] = self.defaultBackground
 
 
 
