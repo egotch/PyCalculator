@@ -48,7 +48,7 @@ class Calculator():
         #Operation Buttons
         operation_args = {'font':small_font, 'relief':'flat', 'background':'grey13', 'foreground':'white', 'activebackground':'grey40'}
         equals_args = {'font':small_font, 'relief':'flat', 'background':'blue4', 'foreground':'white', 'activebackground':'blue2'}
-        button_equal    = HoverButton(self.gui, text='=', padx=40, pady=20, **equals_args)
+        button_equal    = HoverButton(self.gui, text='=', padx=40, pady=20, **equals_args, command=lambda: self.clickOperation('='))
         button_add      = HoverButton(self.gui, text='+', padx=40, pady=20, **operation_args, command=lambda: self.clickOperation('+'))
         button_minus    = HoverButton(self.gui, text='-', padx=40, pady=20, **operation_args, command=lambda: self.clickOperation('-'))
         button_multiply = HoverButton(self.gui, text='x', padx=40, pady=20, **operation_args, command=lambda: self.clickOperation('x'))
@@ -100,16 +100,25 @@ class Calculator():
 
     def clickOperation(self, operation):
         if operation == '=':
-            pass
-        else:
             new_equation = self.curr_equation.get()
             new_equation += self.curr_eval.get()
-            new_equation += ' ' + operation + ' '
-            if self.curr_equation.get() != '' and self.curr_equation.get()[len(self.curr_equation.get()) - 2] in evaluators:
-                self.evaluateExpression(new_equation)
-            else:
-                self.curr_eval.set('')
+            self.evaluateExpression(new_equation)
+            new_equation += ' = '
             self.curr_equation.set(new_equation)
+        else:
+            if len(self.curr_equation.get())>0 and self.curr_equation.get().strip()[-1] == '=':
+                new_equation = self.curr_eval.get() + ' ' + operation + ' '
+                self.curr_eval.set('')
+                self.curr_equation.set(new_equation)
+            else:
+                new_equation = self.curr_equation.get()
+                new_equation += self.curr_eval.get()
+                new_equation += ' ' + operation + ' '
+                if self.curr_equation.get() != '' and self.curr_equation.get()[len(self.curr_equation.get()) - 2] in evaluators:
+                    self.evaluateExpression(new_equation)
+                else:
+                    self.curr_eval.set('')
+                self.curr_equation.set(new_equation)
 
     def evaluateExpression(self, equation):
         """
@@ -117,20 +126,29 @@ class Calculator():
         """
 
         #TODO - Check that the last command entered was a number so you don't just keep adding the latest values together.  Shouldn't be able to mash the + button
-        ops = equation.split(' ')[-4:-2]
-        if ops[0] == '+':
-            new_val = int(self.curr_eval.get()) + int(ops[1])
-            self.curr_eval.set(str(new_val))
-        elif ops[0] == '-':
-            new_val = int(self.curr_eval.get()) - int(ops[1])
-            self.curr_eval.set(str(new_val))
-        elif ops[0] == 'x':
-            new_val = int(self.curr_eval.get()) * int(ops[1])
-            self.curr_eval.set(str(new_val))
-        elif ops[0] == chr(247):
-            new_val = round(self.curr_eval.get() / int(ops[1]), 4)
-            self.curr_eval.set(str(new_val))
-
+        ops = equation.split(' ')
+        value = None
+        e = 0
+        while e < len(ops):
+            if ops[e].isdigit() is True:
+                if value is None:
+                    value = int(ops[e])
+                    e += 1
+                else:
+                    pass
+            elif ops[e] == '+':
+                value += int(ops[e+1])
+                e += 2
+            elif ops[0] == '-':
+                new_val = int(self.curr_eval.get()) - int(ops[1])
+                self.curr_eval.set(str(new_val))
+            elif ops[0] == 'x':
+                new_val = int(self.curr_eval.get()) * int(ops[1])
+                self.curr_eval.set(str(new_val))
+            elif ops[0] == chr(247):
+                new_val = round(self.curr_eval.get() / int(ops[1]), 4)
+                self.curr_eval.set(str(new_val))
+        self.curr_eval.set(str(value))
 
 
 
