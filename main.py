@@ -100,6 +100,8 @@ class Calculator():
 
     def clickOperation(self, operation):
         if operation == '=':
+            if self.curr_equation.get()[-2] == '=':
+                return
             new_equation = self.curr_equation.get()
             new_equation += self.curr_eval.get()
             self.evaluateExpression(new_equation)
@@ -125,7 +127,6 @@ class Calculator():
         evaluates expression currently set in curr_equation
         """
 
-        #TODO - Check that the last command entered was a number so you don't just keep adding the latest values together.  Shouldn't be able to mash the + button
         ops = equation.split(' ')
         value = None
         e = 0
@@ -136,6 +137,8 @@ class Calculator():
                     e += 1
                 else:
                     pass
+            elif ops[e+1] == '':
+                pass
             elif ops[e] == '+':
                 value += int(ops[e+1])
                 e += 2
