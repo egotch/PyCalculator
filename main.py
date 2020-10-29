@@ -7,6 +7,13 @@ evaluators = [
     '+', '-', '\\', 'x'
 ]
 
+def isvalidvalue(some_val):
+    try:
+        float(some_val)
+        return True
+    except:
+        return False
+
 class Calculator():
     def __init__(self):
         self.gui = Tk()
@@ -131,26 +138,30 @@ class Calculator():
         value = None
         e = 0
         while e < len(ops):
-            if ops[e].isdigit() is True:
+            if isvalidvalue(ops[e]) is True:
                 if value is None:
-                    value = int(ops[e])
+                    value = float(ops[e])
                     e += 1
                 else:
                     pass
             elif ops[e+1] == '':
-                pass
-            elif ops[e] == '+':
-                value += int(ops[e+1])
                 e += 2
-            elif ops[0] == '-':
-                new_val = int(self.curr_eval.get()) - int(ops[1])
-                self.curr_eval.set(str(new_val))
-            elif ops[0] == 'x':
-                new_val = int(self.curr_eval.get()) * int(ops[1])
-                self.curr_eval.set(str(new_val))
-            elif ops[0] == chr(247):
-                new_val = round(self.curr_eval.get() / int(ops[1]), 4)
-                self.curr_eval.set(str(new_val))
+                pass
+            #addition
+            elif ops[e] == '+':
+                value += float(ops[e+1])
+                e += 2
+            #subtraction
+            elif ops[e] == '-':
+                value -= float(ops[e+1])
+                e += 2
+            #multiplication
+            elif ops[e] == 'x':
+                value = value * float(ops[e+1])
+                e += 2
+            elif ops[e] == chr(247):
+                value = value / float(ops[e+1])
+                e += 2
         self.curr_eval.set(str(value))
 
 
