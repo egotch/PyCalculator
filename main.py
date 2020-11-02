@@ -25,13 +25,16 @@ class Calculator():
         self.curr_equation = StringVar()
         self.curr_value = IntVar()
         self.curr_value.set(0)
+        self.curr_display_val = StringVar()
+        self.curr_display_val.set('')
+        self.last_click = StringVar()
 
         ## Buttons
         #Main entry
         equation = Entry(self.gui, textvariable=self.curr_equation, width=16, font=small_font, relief='flat', background=self.gui['background'], foreground='white')
         equation.grid(row=0, column=0, columnspan=3)
 
-        evaluation = Entry(self.gui, textvariable=self.curr_eval, width=16, borderwidth=5, font=large_font, relief='flat', background=self.gui['background'], foreground='white')
+        evaluation = Entry(self.gui, textvariable=self.curr_display_val, width=16, borderwidth=5, font=large_font, relief='flat', background=self.gui['background'], foreground='white')
         evaluation.grid(row=1, column=0, columnspan=3)
 
 
@@ -103,17 +106,27 @@ class Calculator():
         exit()
 
     def clickNumber(self, number):
-        self.curr_eval.set(self.curr_eval.get() + str(number))
+        if self.last_click.get() in evaluators:
+            self.curr_display_val.set('')
+        elif self.last_click.get() == '=':
+            self.curr_display_val.set('')
+            self.curr_equation.set('')
+            self.curr_eval.set('')
+        self.curr_display_val.set(self.curr_display_val.get() + str(number))
+        self.last_click.set(str(number))
 
     def clickOperation(self, operation):
-        if operation == '=':
+        if self.last_click.get() in evaluators:
+            return
+        elif operation == '=':
             if self.curr_equation.get()[-2] == '=':
                 return
             new_equation = self.curr_equation.get()
-            new_equation += self.curr_eval.get()
+            new_equation += self.curr_display_val.get()
             self.evaluateExpression(new_equation)
             new_equation += ' = '
             self.curr_equation.set(new_equation)
+            self.last_click.set('=')
         else:
             if len(self.curr_equation.get())>0 and self.curr_equation.get().strip()[-1] == '=':
                 new_equation = self.curr_eval.get() + ' ' + operation + ' '
@@ -121,13 +134,15 @@ class Calculator():
                 self.curr_equation.set(new_equation)
             else:
                 new_equation = self.curr_equation.get()
-                new_equation += self.curr_eval.get()
+                new_equation += self.curr_display_val.get()
                 new_equation += ' ' + operation + ' '
                 if self.curr_equation.get() != '' and self.curr_equation.get()[len(self.curr_equation.get()) - 2] in evaluators:
                     self.evaluateExpression(new_equation)
                 else:
-                    self.curr_eval.set('')
+                    self.curr_display_val.set('')
+
                 self.curr_equation.set(new_equation)
+            self.last_click.set(operation)
 
     def evaluateExpression(self, equation):
         """
@@ -162,7 +177,12 @@ class Calculator():
             elif ops[e] == chr(247):
                 value = value / float(ops[e+1])
                 e += 2
-        self.curr_eval.set(str(value))
+        if value.is_integer():
+            self.curr_eval.set(str(int(value)))
+            self.curr_display_val.set(str(int(value)))
+        else:
+            self.curr_eval.set(str(value))
+            self.curr_display_val.set(str(value))
 
 
 
